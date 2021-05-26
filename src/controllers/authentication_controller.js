@@ -79,9 +79,56 @@ class AuthenticationController {
             );
         }
     }
+
+    static async updateUser(req, res) {
+        try {
+            const user = await User.update({
+                email: req.body.email,
+            },
+                { where: { id: req.params.id } }
+            );
+
+            if (user[0] === 0) {
+                return successResponse(false, 'User does not exist', null, res);
+            } else {
+                return successResponse(true, 'User updated successfully', null, res);
+            }
+        } catch (err) {
+            return errorResponse(
+                false,
+                'Something went wrong',
+                err.toString(),
+                500,
+                res
+            );
+        }
+    }
+
+    static async showAllUsers(req, res) {
+        User.findAll({
+        }).then(users => {
+            return successResponse(
+                true,
+                users,
+                undefined,
+                res
+            );
+        }).catch(err => {
+            return errorResponse(
+                false,
+                'Something went wrong',
+                err.toString(),
+                500,
+                res
+
+            );
+        });
+    }
 }
 
 module.exports = {
     register: AuthenticationController.register,
-    login: AuthenticationController.login
+    login: AuthenticationController.login,
+    updateUser: AuthenticationController.updateUser,
+    showAllUsers: AuthenticationController.showAllUsers,
 };
